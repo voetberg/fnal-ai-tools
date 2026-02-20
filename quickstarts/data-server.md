@@ -19,10 +19,9 @@ This quickstart will guide you through two different methods to set up a method 
 ## Model Setup
 
 1. Install LMStudio GUI
-2. Open the "mission control" window (gear icon in the lower right corner)
-3. Navigate to 'Model Search'. This displays open source LLMs available through [Hugging Face](https://huggingface.co/models). Select a model small enough to fit on your device (the "download options" tab will display an estimate showing performance on your hardware) - I recommend something under 10B (Billion) parameters, but in specific Qwen3 4B will be sufficient. 
-4. Download your selected model and load the model by selecting it in the top menu (or with Ctrl+L). 
-5. Ask the model a few basic questions to test its memory usage. If it slows down your machine dramatically, return to step 3 and pick a smaller model. 
+2. Navigate to 'Model Search' in the sidebar on the left. This displays open source LLMs available through [Hugging Face](https://huggingface.co/models). Select a model small enough to fit on your device (the "download options" tab will display an estimate showing performance on your hardware) - I recommend something under 10B (Billion) parameters, but in specific Qwen3 4B will be sufficient. 
+3. Download your selected model and load the model by selecting it in the top menu (or with Ctrl+L). 
+4. Ask the model a few basic questions to test its memory usage. If it slows down your machine dramatically, return to step 2 and pick a smaller model. 
 
 > Note: If you have a small number of files (<5), instead of setting up the other servers you can create a temporary rag system using the `rag-v1` plugin supplied with LMStudio base. Simply attach the files to your chat.
 
@@ -49,11 +48,9 @@ fastmcp run {server python file}:mcp --transport http --port 8000
 
 5. Connect this server to your LLM in LMStudio by updating the mcp.json - [See instructions here](https://lmstudio.ai/docs/app/mcp)
 
-	a. Switch to `power user` mode in LMStudio
+	a. Open the right sidebar next to the download button
 
-	b. Click the `labs` button in the upper right corner (beaker icon)
-
-	c. Move to `program` and click `Install`. This will open a warning and your MCP.json. Update it as follows: 
+	b. Move to `Integrations` and click `Install`. This will open a warning and your MCP.json. Update it as follows: 
     ```json
 	{
 		  "mcpServers": {
@@ -63,8 +60,9 @@ fastmcp run {server python file}:mcp --transport http --port 8000
 		}
 	}
     ```
-	Saving this update should show that your model gets a single post command to ensure it is alive
-6. Enable this tool in the `programs` menu.
+	Saving this update should show that your model sends a single post command to ensure it is alive. 
+	
+6. Enable this tool in the `Integrations` menu.
 7. Verify the model can contact it by requesting the model pings it. You should get a warning that the model is attempting to contact a tool, and ask if it is allowed to proceed. After this the model will call the tool, showing a few post requests to the server, and a response from that model that it used the tool to return some text. 
 
 > Note: If you stop and start the server while LMStudio is connected, it will no longer be able to properly contact it. You must restart both the server and LMStudio. 
