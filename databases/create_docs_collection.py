@@ -4,8 +4,7 @@ import argparse
 import chromadb
 from uuid import uuid1
 
-DB_PATH = ".chroma/"
-chroma_client =  chromadb.PersistentClient(path=DB_PATH)
+chroma_client =  chromadb.PersistentClient()
 
 ACCEPTED_FILE_TYPES = [".md", ".mkd", ".txt", ".text", ".html"]
 

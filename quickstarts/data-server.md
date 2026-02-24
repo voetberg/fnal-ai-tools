@@ -38,6 +38,7 @@ Installation instructions will follow at each step - these are just reference li
 ## MCP Server Setup
 
 0. Set up a virtual python environment with your method of choice (conda, uv, virtenv, poetry, etc)
+
 	a. If this is an unfamiliar step, follow the [conda installation instructions here](https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html) (miniforge or minimamba are recommended distributions)
 1. [Install FastMCP](https://fastmcp.wiki/en/getting-started/installation) - `pip install fastmcp`
 2. Create a python file where your server code will live
@@ -70,6 +71,7 @@ If you have cloned this repository, copy-paste this to run the example:
 5. Connect this server to your LLM in LMStudio by updating the mcp.json - [See instructions here](https://lmstudio.ai/docs/app/mcp)
 
 	a. Open the right sidebar next to the download button
+
 	![sidebar button](./resources/lmstudio_sidebar.png)
 	
 	b. Move to `Integrations` (hammer icon) and click `Install`. This will open a warning and your MCP.json. Update it as follows: 
@@ -92,7 +94,7 @@ If you have cloned this repository, copy-paste this to run the example:
 ## Setting up Chroma DB
 
 1. [Install ChromaDB](https://docs.trychroma.com/docs/overview/getting-started#install-manually) - `pip install chromadb`
-2. Create your server with your existing files. [View an example here.](../databases/documentation_server.py)
+2. Create your server with your existing files. [View an example here.](../databases/create_docs_collection.py)
 
 	a. This example takes a folder that is one level deep containing either html, md, or .txt files and adds them to a collection with generated UUIDs for each file. 
 	
@@ -121,7 +123,7 @@ If you have cloned this repository, copy-paste this to run the example:
 1. Create a duplicate of the original MCP server
 2. Use the PersistentClient to open up the collection you made before
 ```python
-chroma_client =  chromadb.PersistentClient(path=DB_PATH)
+chroma_client =  chromadb.PersistentClient()
 your_collection = chroma_client.get_collection(NAME_OF_YOUR_COLLECTION_GOES_HERE)
 ```
 

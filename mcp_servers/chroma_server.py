@@ -2,14 +2,12 @@ from typing import Optional
 from fastmcp import FastMCP
 import chromadb
 
-from databases.documentation_server import DB_PATH
-
 # FILL ME IN!
 COLLECTION_NAME = "????"
 
 
 mcp = FastMCP("Chroma Server")
-chroma_client = chromadb.PersistentClient(DB_PATH)
+chroma_client = chromadb.PersistentClient()
 collection = chroma_client.get_collection(COLLECTION_NAME)
 
 
