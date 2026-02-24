@@ -4,13 +4,17 @@ This quickstart will guide you through two different methods to set up a method 
 
 ### Notes: 
 * This guide is tested on a M1 Mac, so other architectures may see slightly different interfaces. 
+* LMStudio changes UI often, so the images and specific locations of icons in this instructions assume LMStudio v.0.4.3
 
 ### Prerequisites: 
-* General python knowledge
-* A python installation and a working understanding of virtual environments
+* General python knowledge.
+* A python installation (>=3.11) and a working understanding of virtual environments
 * A device on which you can freely download software
 
 ### Installations/things to download:
+
+Installation instructions will follow at each step - these are just reference links!
+
 * [LM Studio](https://lmstudio.ai/) - This will be used to host a local model and contact the document server. Using the GUI is recommended to start with. 
 * [FastMCP](https://fastmcp.wiki/en/getting-started/welcome) - This will be the interface between the model and your documents. 
 * [ChromaDB](https://docs.trychroma.com/docs/overview/getting-started) - This will create a "knowledge store", holding your documentation is a way the model can access freely. 
@@ -18,9 +22,15 @@ This quickstart will guide you through two different methods to set up a method 
 
 ## Model Setup
 
-1. Install LMStudio GUI
-2. Navigate to 'Model Search' in the sidebar on the left. This displays open source LLMs available through [Hugging Face](https://huggingface.co/models). Select a model small enough to fit on your device (the "download options" tab will display an estimate showing performance on your hardware) - I recommend something under 10B (Billion) parameters, but in specific Qwen3 4B will be sufficient. 
-3. Download your selected model and load the model by selecting it in the top menu (or with Ctrl+L). 
+1. [Install LMStudio GUI](https://lmstudio.ai/download)
+2. Navigate to 'Model Search' in the sidebar on the left (or using ctrl+M). This displays open source LLMs available through [Hugging Face](https://huggingface.co/models). Select a model small enough to fit on your device (the "download options" tab will display an estimate showing performance on your hardware) - I recommend something under 10B (Billion) parameters, but in specific Qwen3 4B will be sufficient. 
+
+![model search icon](./resources/model_search.png)
+
+3. Download your selected model and load the model by selecting it in the top load menu (or with Ctrl+L). 
+
+![load bar](./resources/load_bar.png)
+
 4. Ask the model a few basic questions to test its memory usage. If it slows down your machine dramatically, return to step 2 and pick a smaller model. 
 
 > Note: If you have a small number of files (<5), instead of setting up the other servers you can create a temporary rag system using the `rag-v1` plugin supplied with LMStudio base. Simply attach the files to your chat.
@@ -28,9 +38,19 @@ This quickstart will guide you through two different methods to set up a method 
 ## MCP Server Setup
 
 0. Set up a virtual python environment with your method of choice (conda, uv, virtenv, poetry, etc)
+	a. If this is an unfamiliar step, follow the [conda installation instructions here](https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html) (miniforge or minimamba are recommended distributions)
 1. [Install FastMCP](https://fastmcp.wiki/en/getting-started/installation) - `pip install fastmcp`
 2. Create a python file where your server code will live
 3. Create your server with dummy commands - an example can be seen [here](../mcp_servers/dummy_server.py)
+	
+	a. Import fastmcp (`from fastmcp import FastMCP`)
+
+	b. Set a mcp server definition with `mcp = FASTMCP("YOUR SERVER NAME HERE")`
+	
+	c. Define a function the model can call. `def ....`, and add the decorator `@mcp.tool`
+
+	d. In the main block (`if __name__ == "__main__":`) include `mcp.run()`
+
 
 > Note: It is important to add typing and docstrings to each mcp.tool method. Otherwise, the LLM model will have to infer the types and functionality of each tool from the name alone, and is more likely to get it wrong. 
 
@@ -40,7 +60,8 @@ This quickstart will guide you through two different methods to set up a method 
 fastmcp run {server python file}:mcp --transport http --port 8000
 ```
  where you replace the name of the file and make sure the server is named `mcp` (e.g. mcp = FastMCP("Some Name"))
-	copy-paste for the above repository: 
+
+If you have cloned this repository, copy-paste this to run the example: 
 
 ```bash
 	fastmcp run mcp_servers/dummy_server.py:mcp --transport http --port 8000
@@ -49,8 +70,9 @@ fastmcp run {server python file}:mcp --transport http --port 8000
 5. Connect this server to your LLM in LMStudio by updating the mcp.json - [See instructions here](https://lmstudio.ai/docs/app/mcp)
 
 	a. Open the right sidebar next to the download button
-
-	b. Move to `Integrations` and click `Install`. This will open a warning and your MCP.json. Update it as follows: 
+	![sidebar button](./resources/lmstudio_sidebar.png)
+	
+	b. Move to `Integrations` (hammer icon) and click `Install`. This will open a warning and your MCP.json. Update it as follows: 
     ```json
 	{
 		  "mcpServers": {
@@ -62,14 +84,14 @@ fastmcp run {server python file}:mcp --transport http --port 8000
     ```
 	Saving this update should show that your model sends a single post command to ensure it is alive. 
 	
-6. Enable this tool in the `Integrations` menu.
+6. Enable this tool in the `Integrations` menu (toggle turns purple when enabled).
 7. Verify the model can contact it by requesting the model pings it. You should get a warning that the model is attempting to contact a tool, and ask if it is allowed to proceed. After this the model will call the tool, showing a few post requests to the server, and a response from that model that it used the tool to return some text. 
 
 > Note: If you stop and start the server while LMStudio is connected, it will no longer be able to properly contact it. You must restart both the server and LMStudio. 
 
 ## Setting up Chroma DB
 
-1. [Install ChromaDB](https://docs.trychroma.com/docs/overview/getting-started#install-manually)
+1. [Install ChromaDB](https://docs.trychroma.com/docs/overview/getting-started#install-manually) - `pip install chromadb`
 2. Create your server with your existing files. [View an example here.](../databases/documentation_server.py)
 
 	a. This example takes a folder that is one level deep containing either html, md, or .txt files and adds them to a collection with generated UUIDs for each file. 
@@ -93,6 +115,8 @@ fastmcp run {server python file}:mcp --transport http --port 8000
 ```
 
 ## Create an MCP to use your collection
+
+> Note: The full copy-paste version of this can be found [here](../mcp_servers/chroma_server.py)
 
 1. Create a duplicate of the original MCP server
 2. Use the PersistentClient to open up the collection you made before
@@ -120,8 +144,6 @@ def query_db(query_text: str) -> str:
     # Will return a dictionary with `documentation` where documents is of shape [n_queries, n_results]
     return " ".join(query_result)
 ```
-
-> Note: a full example can be seen [here](../mcp_servers/chroma_server.py)
 
 4. Run the server with 
 ```bash
