@@ -43,10 +43,11 @@ def add_files_from_directory(collection_name: str, file_directory: str) -> None:
 
 if __name__ == "__main__": 
     parser = argparse.ArgumentParser(prog="Create a new persistent chromadb")
-    parser.add_argument("--name", help="Name of your new collection")
+    parser.add_argument("--name", help="Name of your new collection", required=True)
     parser.add_argument(
         "--files", 
-        help="Relative path to your collection of files. Only supports a directory that is one deep."
+        help="Relative path to your collection of files. Only supports a directory that is one deep.",
+        required=True
     )
 
     args = parser.parse_args()
